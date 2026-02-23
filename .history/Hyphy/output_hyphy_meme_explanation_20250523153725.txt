@@ -1,0 +1,113 @@
+This is the output of hyphy meme. Can you explain?
+
+### Obtaining branch lengths and nucleotide substitution biases under the nucleotide GTR model
+
+>kill-zero-lengths –> Yes
+
+### Deleted 27 zero-length internal branches: Node131, Node133, Node134, Node145, Node147, Node161, Node162, Node172, Node178, Node179, Node180, Node184, Node185, Node190, Node199, Node219, Node220, Node232, Node233, Node234, Node235, Node236, Node237, Node242, Node251, Node64, Node91
+* Log(L) = -35071.26, AIC-c = 70761.50 (309 estimated parameters)
+
+### Obtaining the global omega estimate based on relative GTR branch lengths and nucleotide substitution biases
+* Log(L) = -30445.37, AIC-c = 61471.36 (289 estimated parameters)
+* non-synonymous/synonymous rate ratio for *test* =   0.0721
+
+### Improving branch lengths, nucleotide substitution biases, and global dN/dS ratios under a full codon model
+
+>full-model –> Yes
+* Log(L) = -30115.40
+* non-synonymous/synonymous rate ratio for *test* =   0.0596
+
+### For partition 1 these sites are significant at p <=0.1
+
+|   Codon    | Partition  |   alpha    |   beta+    |     p+     |    LRT     |Episodic selection detected?| # branches |Most common codon substitutions at this site|
+|:----------:|:----------:|:----------:|:----------:|:----------:|:----------:|:--------------------------:|:----------:|:------------------------------------------:|
+|     2      |     1      |    1.192   |  403.772   |    0.005   |    8.363   |      Yes, p =  0.0068      |     1      |[12]ACA>ACG|[4]ACA>ACT|[2]ACG>ACT|[1]ACA>...|
+|     4      |     1      |    1.764   |   20.267   |    0.041   |   11.951   |      Yes, p =  0.0011      |     5      |[14]ATC>ATT|[2]ATC>TCT,ATT>TCT|[1]ATC>ACC...|
+|     5      |     1      |    0.604   |    2.797   |    0.254   |    3.285   |      Yes, p =  0.0919      |     8      |[12]CTC>CGC|[9]CTC>CTG|[2]CGC>CTC|[1]CTC>...|
+|     6      |     1      |    2.210   |  127.944   |    0.011   |    9.955   |      Yes, p =  0.0030      |     1      |[13]TCA>TCG|[7]TCA>TCC|[3]TCA>TCT,TCG>TCT...|
+|     7      |     1      |    1.160   |   20.147   |    0.108   |   25.462   |      Yes, p =  0.0000      |     16     |[9]AGT>TCT|[6]AGT>AGC|[3]AGT>TGT|[1]AGC>C...|
+|     11     |     1      |    0.222   |   40.009   |    0.070   |   56.389   |      Yes, p =  0.0000      |     10     |[3]GAA>AAA,GAA>TTA|[2]GAA>CTC,GAA>GAG,GAA...|
+|     12     |     1      |    0.000   |    3.688   |    0.357   |   14.270   |      Yes, p =  0.0003      |     12     |[8]GAA>GAC|[7]GAA>GAT|[2]GAA>TTA,GAC>GAA|...|
+
+
+################################################################################
+
+7 codons show evidence of episodic diversifying selection (positive selection on some branches, not all).
+
+HyPhy automatically deleted 27 internal branches that had zero length (i.e., no substitutions).
+
+The global ω (dN/dS) is low (~0.06–0.07), meaning overall purifying selection dominates, but some sites still evolve adaptively.
+
+MEME successfully found specific codons under positive selection (significant p-values), and shows which codon changes were common at those positions.
+
+
+# Ititial model (nucleotide GTR)
+Obtaining branch lengths and nucleotide substitution biases under the nucleotide GTR model
+>kill-zero-lengths –> Yes
+Deleted 27 zero-length internal branches
+
+    MEME begins by estimating the GTR (General Time Reversible) nucleotide model.
+
+    27 internal branches were zero-length, and these were pruned — otherwise, they could mess with likelihood calculations.
+
+# Step 2:  Global dN/dS (ω) estimate
+non-synonymous/synonymous rate ratio for *test* = 0.0721
+Global ω is 0.0721, suggesting purifying selection dominates (dN < dS).
+
+But this doesn't mean no positive selection — MEME looks at variation across branches at each site.
+
+
+# Step 3: Full codon model fit
+full-model –> Yes
+non-synonymous/synonymous rate ratio for *test* = 0.0596
+This improves the model fit by using codon-level substitution patterns instead of nucleotides.
+ω becomes even smaller, showing strong purifying selection overall.
+
+# Step 4: Per-site test results (MEME core)
+Column |	Meaning
+Codon |	The codon site number (e.g., 2, 4, 6)
+alpha |	dS (synonymous substitution rate)
+beta+ |	dN (non-synonymous rate on selected branches)
+p+ |	    Proportion of branches where positive selection occurred
+LRT |	    Likelihood Ratio Test statistic
+Episodic selection detected? |	Significance test result (p ≤ 0.1 = yes)
+branches |    Number of branches inferred to be under selection
+Most common codon substitutions |	Frequent amino acid-altering mutations at this site
+
+
+
+########################################################################
+QUESTIONS:
+
+There are 1296 bases in the alignment which is analyzed here (ACmerged_contig_1011). In half an hour, here is the output of hyphy meme:
+
+Two questions:
+#???????????????????????????????????????????????????????????????????????????
+How is it possible there are so many sites under positive selection on a single gene? is it processing individual bases or codon?
+#???????????????????????????????????????????????????????????????????????????
+
+ It’s processing codons, not individual bases.
+
+    MEME (Mixed Effects Model of Evolution) detects positive selection at the codon level, not per nucleotide.
+
+    So, when you see "Site 2", "Site 4", "Site 5", etc., those refer to codon positions in the alignment — not base pairs.
+
+3 bases/codon1296 bases​=432 codons
+
+So you're analyzing 432 codons, not 1296 — and the codon numbers reported by MEME (like 2, 4, 5, etc.) are positions from 1 to 432.
+
+You have ~30 codons flagged as under episodic selection, which is ~7% of all sites — still a relatively high proportion, but not unreasonable depending on:
+
+    The evolutionary depth and branch heterogeneity in your tree.
+
+    Whether the gene has a functional role under diversifying pressure.
+
+    The quality of the alignment and tree.
+
+    Lack of multiple testing correction — MEME p-values need adjustment, or you'll get false positives. MEME does not correct by default, so it's very easy to over-interpret raw output.
+
+
+
+#???????????????????????????????????????????????????????????????????????????
+How long will it takes to process the whole locus?
+#???????????????????????????????????????????????????????????????????????????

@@ -1,0 +1,92 @@
+#######################################
+# Snakefile: Conserved Regions Pipeline
+#######################################
+
+# Config
+configfile: "config.yaml"
+
+# Default target
+rule all:
+    input:
+        "results/intersection_GERP_Hyphy/intersection_GERP_HyPhy.bed",
+        "results/intersection_GERP_Hyphy/Genomic_Regions_all_intersections.png",
+        "results/bait_variants.vcf"
+
+#######################################
+# Step 1. HyPhy
+#######################################
+rule hyphy:
+    input:
+        msa="data/{gene}.msa",
+        tree="data/{gene}.tree"
+    output:
+        "results/hyphy/{gene}.all_loci.csv"
+    shell:
+        """
+        mkdir -p results/hyphy
+        hyphy CPU=4 BASEPATH={config[HYPHY_PATH]} \
+            < {input.msa} \
+            > {output}
+        """
+
+#######################################
+# Step 2. GERP++
+#######################################
+rule gerp:
+    input:
+        msa="data/{gene}.msa",
+        tree="data/{gene}.tree"
+    output:
+        "results/GERP/{gene}.all.mfa.rates.elems"
+    shell:
+        """
+        mkdir -p results/GERP
+        gerp++ -t {input.tree} -a {input.msa} -o results/GERP/{wildcards.gene}.all.mfa
+        """
+
+#######################################
+# Step 3. Runs of Homozygosity (optional)
+#######################################
+rule roh:
+    input:
+        vcf="data/{sample}.vcf"
+    output:
+        "results/{sample}.all.vcf"
+    shell:
+        """
+        bash scripts/run_roh.sh {input.vcf} {output}
+        """
+
+#######################################
+# Step 4. Intersection (HyPhy + GERP)
+#######################################
+rule intersection:
+    input:
+        hyphy=expand("results/hyphy/{gene}.all_loci.csv", gene=config["genes"]),
+        gerp=expand("results/GERP/{gene}.all.mfa.rates.elems", gene=config["genes"])
+    output:
+        bed="results/intersection_GERP_Hyphy/intersection_GERP_HyPhy.bed",
+        plot="results/intersection_GERP_Hyphy/Genomic_Regions_all_intersections.png"
+    shell:
+        """
+        mkdir -p results/intersection_GERP_Hyphy
+        jupyter nbconvert --to notebook --execute scripts/intersec_GERP_hyphy.ipynb \
+            --output results/intersection_GERP_Hyphy/intersec_GERP_hyphy_executed.ipynb
+        cp results/intersection_GERP_Hyphy/intersection_GERP_HyPhy.bed {output.bed}
+        cp results/intersection_GERP_Hyphy/Genomic_Regions_all_intersections.png {output.plot}
+        """
+
+#######################################
+# Step 5. Extract Variants
+#######################################
+rule extract_variants:
+    input:
+        vcf="results/{sample}.all.vcf",
+        bed="results/intersection_GERP_Hyphy/intersection_GERP_HyPhy.bed"
+    output:
+        "results/bait_variants.vcf"
+    shell:
+        """
+        bash scripts/script_extract_variants_genregions.sh {input.vcf} {input.bed} {output}
+        """
+

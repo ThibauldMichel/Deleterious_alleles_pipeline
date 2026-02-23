@@ -1,0 +1,4 @@
+# Make the MSA from VCF 
+
+We could have made the MSA from raw reads aligned with SPADE.
+ 

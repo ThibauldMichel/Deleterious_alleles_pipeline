@@ -1,0 +1,21 @@
+I have made the intersection on Hyphy purifying selection genomic regions and GERP scores showing conserved regions under selection on different chromosomes to get the position of very conserved critical regions in the genome.
+Now I wan to see the deleterious alleles on these sites, possibly with minor alleles frequency. How to do?
+
+
+########################################################################
+
+Two datasets explored here: 
+A. the target-capture dataset of PNG specimens 
+B. the B. fluvialis and B. sublobata  (already analyzed with ROH analysis for Catherine)
+
+
+
+
+PNG data set (target capture)
+Detection of GERP rejected substitution (RS) high score to indicate conserved sequence. DONE
+Now, relate baits to the annotated genome of B. masoniana to compare to the alleles found in the B. masoniana complex article, in order to see if we find the same conserved regions/deleterious alleles In Hillebrandia.
+Use SIFR to predict changes in these sites. 
+
+
+B. fluvialis and B. sublobata specimens (WGS)
+Detect full-genome RS scores (GERP) for these specimens and Hillebrandia.

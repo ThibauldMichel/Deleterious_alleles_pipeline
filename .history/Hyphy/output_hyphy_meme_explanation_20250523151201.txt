@@ -1,0 +1,34 @@
+This is the output of hyphy meme. Can you explain?
+
+### Obtaining branch lengths and nucleotide substitution biases under the nucleotide GTR model
+
+>kill-zero-lengths –> Yes
+
+### Deleted 27 zero-length internal branches: Node131, Node133, Node134, Node145, Node147, Node161, Node162, Node172, Node178, Node179, Node180, Node184, Node185, Node190, Node199, Node219, Node220, Node232, Node233, Node234, Node235, Node236, Node237, Node242, Node251, Node64, Node91
+* Log(L) = -35071.26, AIC-c = 70761.50 (309 estimated parameters)
+
+### Obtaining the global omega estimate based on relative GTR branch lengths and nucleotide substitution biases
+* Log(L) = -30445.37, AIC-c = 61471.36 (289 estimated parameters)
+* non-synonymous/synonymous rate ratio for *test* =   0.0721
+
+### Improving branch lengths, nucleotide substitution biases, and global dN/dS ratios under a full codon model
+
+>full-model –> Yes
+* Log(L) = -30115.40
+* non-synonymous/synonymous rate ratio for *test* =   0.0596
+
+### For partition 1 these sites are significant at p <=0.1
+
+|   Codon    | Partition  |   alpha    |   beta+    |     p+     |    LRT     |Episodic selection detected?| # branches |Most common codon substitutions at this site|
+|:----------:|:----------:|:----------:|:----------:|:----------:|:----------:|:--------------------------:|:----------:|:------------------------------------------:|
+|     2      |     1      |    1.192   |  403.772   |    0.005   |    8.363   |      Yes, p =  0.0068      |     1      |[12]ACA>ACG|[4]ACA>ACT|[2]ACG>ACT|[1]ACA>...|
+|     4      |     1      |    1.764   |   20.267   |    0.041   |   11.951   |      Yes, p =  0.0011      |     5      |[14]ATC>ATT|[2]ATC>TCT,ATT>TCT|[1]ATC>ACC...|
+|     5      |     1      |    0.604   |    2.797   |    0.254   |    3.285   |      Yes, p =  0.0919      |     8      |[12]CTC>CGC|[9]CTC>CTG|[2]CGC>CTC|[1]CTC>...|
+|     6      |     1      |    2.210   |  127.944   |    0.011   |    9.955   |      Yes, p =  0.0030      |     1      |[13]TCA>TCG|[7]TCA>TCC|[3]TCA>TCT,TCG>TCT...|
+|     7      |     1      |    1.160   |   20.147   |    0.108   |   25.462   |      Yes, p =  0.0000      |     16     |[9]AGT>TCT|[6]AGT>AGC|[3]AGT>TGT|[1]AGC>C...|
+|     11     |     1      |    0.222   |   40.009   |    0.070   |   56.389   |      Yes, p =  0.0000      |     10     |[3]GAA>AAA,GAA>TTA|[2]GAA>CTC,GAA>GAG,GAA...|
+|     12     |     1      |    0.000   |    3.688   |    0.357   |   14.270   |      Yes, p =  0.0003      |     12     |[8]GAA>GAC|[7]GAA>GAT|[2]GAA>TTA,GAC>GAA|...|
+
+
+################################################################################
+

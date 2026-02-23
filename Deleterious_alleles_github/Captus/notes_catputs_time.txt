@@ -1,0 +1,11 @@
+BETTER TREE FOUND at iteration 172: -22911722.415
+Iteration 180 / LogL: -22912294.234 / Time: 250h:18m:6s (118h:36m:23s left)
+Estimate model parameters (epsilon = 0.100)
+Initial log-likelihood: -22911719.091
+Current log-likelihood at step 1: -22911718.372
+Current log-likelihood at step 2: -22911718.285
+Parameters optimization took 1 rounds (249.727 sec)
+
+BETTER TREE FOUND at iteration 184: -22911718.285
+Iteration 190 / LogL: -22917433.783 / Time: 265h:51m:32s (122h:30m:37s left)
+
