@@ -1,63 +1,69 @@
 #!/bin/bash
-#SBATCH --job-name=msa_chrom
+#SBATCH --job-name="msa_merge"
 #SBATCH --export=ALL
-#SBATCH --partition=long
-#SBATCH --array=0-999%20   # We'll adjust the range dynamically
-#SBATCH --cpus-per-task=4   # MAFFT can use multiple threads
-#SBATCH --mem=16G
-#SBATCH --time=24:00:00
-#SBATCH --output=logs/mfa_%A_%a.out
-#SBATCH --error=logs/mfa_%A_%a.err
+#SBATCH --partition=short
+#SBATCH --array=1-999%20
+#SBATCH --output=logs/msa_merge_%A_%a.out
+#SBATCH --error=logs/msa_merge_%A_%a.err
 
-set -eo pipefail
+set -euo pipefail
 
 source /mnt/apps/users/tmichel/conda/etc/profile.d/conda.sh
 conda activate msa_env
 
 REF="/home/tmichel/projects/rbge/tmichel/reference_genomes/Bmas.fa"
 OUTDIR="output_msa_tree"
-SAMTOOLS=$(which samtools)
-MAFFT=$(which mafft)
+VCF_NORM="output_msa_tree/tmp/all.norm.vcf.gz"
 
-mkdir -p "$OUTDIR/mfa_dir"
-mkdir -p "$OUTDIR/MSA_realigned"
+mkdir -p "$OUTDIR"/{mfa_dir,MSA_realigned}
 mkdir -p logs
 
-# --- Get list of chromosomes ---
-mapfile -t CHROMS < <(cut -f1 "$REF.fai")
+SAMTOOLS=$(which samtools)
+MAFFT=$(which mafft)
+BCFTOOLS=$(which bcftools)
 
-# Safety check: exit if array index is too high
-if [ "$SLURM_ARRAY_TASK_ID" -ge "${#CHROMS[@]}" ]; then
-    echo "No chromosome for this task ID"
+# -----------------------------
+# Get chromosome list from VCF
+# -----------------------------
+CHROM=$( $BCFTOOLS query -f '%CHROM\n' "$VCF_NORM" | sort -u | sed -n "${SLURM_ARRAY_TASK_ID}p" )
+
+if [ -z "$CHROM" ]; then
+    echo "No chromosome for task $SLURM_ARRAY_TASK_ID — exiting."
     exit 0
 fi
 
-CHROM=${CHROMS[$SLURM_ARRAY_TASK_ID]}
-MFA="$OUTDIR/mfa_dir/${CHROM}.mfa"
-REALIGNED="$OUTDIR/MSA_realigned/${CHROM}.mfa"
+echo "Processing chromosome: $CHROM"
 
-# Skip if already realigned MFA exists
-if [ -f "$REALIGNED" ]; then
-    echo "$REALIGNED exists — skipping"
-    exit 0
-fi
-
-echo "Building MFA for chromosome: $CHROM"
-
+# -----------------------------
 # Step 5 — Build MFA
-echo ">reference" > "$MFA"
-$SAMTOOLS faidx "$REF" "$CHROM" | tail -n +2 >> "$MFA"
+# -----------------------------
+MFA="$OUTDIR/mfa_dir/${CHROM}.mfa"
 
-for FA in "$OUTDIR"/per_chrom/*__${CHROM}.fa; do
-    SAMPLE=$(basename "$FA" .fa | sed "s/__${CHROM}$//")
-    echo ">$SAMPLE" >> "$MFA"
-    tail -n +2 "$FA" >> "$MFA"
-done
+if [ ! -f "$MFA" ]; then
+    echo "Building MFA for $CHROM"
+    echo ">reference" > "$MFA"
+    $SAMTOOLS faidx "$REF" "$CHROM" | tail -n +2 >> "$MFA"
 
-echo "Done MFA for chromosome $CHROM"
+    for FA in "$OUTDIR"/per_chrom/*__${CHROM}.fa; do
+        [ -e "$FA" ] || continue
+        SAMPLE=$(basename "$FA" .fa | sed "s/__${CHROM}$//")
+        echo ">$SAMPLE" >> "$MFA"
+        tail -n +2 "$FA" >> "$MFA"
+    done
+else
+    echo "$MFA exists — skipping"
+fi
 
+# -----------------------------
 # Step 5.5 — MAFFT realignment
-echo "Realigning $MFA with MAFFT → $REALIGNED"
-$MAFFT --auto "$MFA" > "$REALIGNED"
+# -----------------------------
+OUT="$OUTDIR/MSA_realigned/${CHROM}.mfa"
 
-echo "Done realignment for chromosome $CHROM"
+if [ ! -f "$OUT" ]; then
+    echo "Running MAFFT for $CHROM"
+    $MAFFT --auto "$MFA" > "$OUT"
+else
+    echo "$OUT exists — skipping"
+fi
+
+echo "Done chromosome $CHROM."

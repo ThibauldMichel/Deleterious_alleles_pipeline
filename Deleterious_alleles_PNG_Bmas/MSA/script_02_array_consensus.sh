@@ -2,7 +2,12 @@
 #SBATCH --job-name="msa_array"
 #SBATCH --export=ALL
 #SBATCH --partition=short
-#SBATCH --array=0-999%20
+#SBATCH --array=0-200%20
+
+# Directories for Slurm output
+#SBATCH --output=/home/tmichel/slurm_logs/msa_%A_%a.out
+#SBATCH --error=/home/tmichel/slurm_logs/msa_%A_%a.err
+
 
 set -euo pipefail
 
@@ -35,7 +40,7 @@ FA="$OUTDIR/consensus_fastas/${SAMPLE}.fa"
 # Step 3 — Consensus
 if [ ! -f "$FA" ]; then
     echo "Generating consensus..."
-    $BCFTOOLS consensus -f "$REF" -s "$SAMPLE" "$VCF_NORM" > "$FA"
+    $BCFTOOLS consensus -f "$REF" -s "$SAMPLE" --missing N "$VCF_NORM" > "$FA"
 else
     echo "Consensus exists — skipping"
 fi
