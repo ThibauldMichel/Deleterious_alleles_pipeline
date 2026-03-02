@@ -20,13 +20,13 @@ mkdir -p "$OUTDIR"/tmp
 VCF_SNPS="$OUTDIR/tmp/all.snps.vcf.gz"
 VCF_NORM="$OUTDIR/tmp/all.norm.vcf.gz"
 
-# Index reference
+# Index reference (step 0)
 if [ ! -f "$REF.fai" ]; then
     echo "Indexing reference..."
     $SAMTOOLS faidx "$REF"
 fi
 
-# Filter SNPs
+# Filter SNPs (step 1)
 if [ ! -f "$VCF_SNPS" ]; then
     echo "Filtering SNPs..."
     $BCFTOOLS view -v snps "$VCF" -Oz -o "$VCF_SNPS"
@@ -35,7 +35,7 @@ else
     echo "SNP VCF exists — skipping"
 fi
 
-# Normalize
+# Normalize (step 2)
 if [ ! -f "$VCF_NORM" ]; then
     echo "Normalizing VCF..."
     $BCFTOOLS norm -m -both -f "$REF" "$VCF_SNPS" -Oz -o "$VCF_NORM"

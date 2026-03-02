@@ -23,7 +23,7 @@ MAFFT=$(which mafft)
 BCFTOOLS=$(which bcftools)
 
 # -----------------------------
-# Get chromosome list from VCF
+# Get chromosome list from VCF 
 # -----------------------------
 CHROM=$( $BCFTOOLS query -f '%CHROM\n' "$VCF_NORM" | sort -u | sed -n "${SLURM_ARRAY_TASK_ID}p" )
 
@@ -55,7 +55,7 @@ else
 fi
 
 # -----------------------------
-# Step 5.5 — MAFFT realignment
+# Step 6 — MAFFT realignment
 # -----------------------------
 OUT="$OUTDIR/MSA_realigned/${CHROM}.mfa"
 
